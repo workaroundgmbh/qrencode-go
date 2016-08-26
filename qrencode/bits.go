@@ -92,7 +92,7 @@ func (g *BitGrid) String() string {
 }
 
 // Outputs the Code in UTF8 Block Characters. Each Bit is half a character
-func (g *BitGrid) WriteUtf8BlockChars(w io.Writer, inverse bool) {
+func (g *BitGrid) WriteUtf8BlockChars(w io.Writer, inverse bool) error {
 	var upperHalfBlock []byte
 	var lowerHalfBlock []byte
 	var completeBlock []byte
@@ -113,44 +113,89 @@ func (g *BitGrid) WriteUtf8BlockChars(w io.Writer, inverse bool) {
 	}
 	newline := []byte("\n")
 
-	w.Write(space)
+	_, err := w.Write(space)
+	if err != nil {
+		return err
+	}
 	for i := 0; i < g.Width(); i++ {
 		if g.Get(i, 0) {
-			w.Write(lowerHalfBlock)
+			_, err = w.Write(lowerHalfBlock)
+			if err != nil {
+				return err
+			}
 		} else {
-			w.Write(space)
+			_, err = w.Write(space)
+			if err != nil {
+				return err
+			}
 		}
 	}
-	w.Write(space)
-	w.Write(newline)
+	_, err = w.Write(space)
+	if err != nil {
+		return err
+	}
+	_, err = w.Write(newline)
+	if err != nil {
+		return err
+	}
 
 	for i := 1; i < g.Height()-1; i = i + 2 {
-		w.Write(space)
+		_, err = w.Write(space)
+		if err != nil {
+			return err
+		}
 		for j := 0; j < g.Width(); j++ {
 			if g.Get(j, i) {
 				if g.Get(j, i+1) {
-					w.Write(completeBlock)
+					_, err = w.Write(completeBlock)
+					if err != nil {
+						return err
+					}
 				} else {
-					w.Write(upperHalfBlock)
+					_, err = w.Write(upperHalfBlock)
+					if err != nil {
+						return err
+					}
 				}
 			} else {
 				if g.Get(j, i+1) {
-					w.Write(lowerHalfBlock)
+					_, err = w.Write(lowerHalfBlock)
+					if err != nil {
+						return err
+					}
 				} else {
-					w.Write(space)
+					_, err = w.Write(space)
+					if err != nil {
+						return err
+					}
 				}
 			}
 		}
-		w.Write(space)
-		w.Write(newline)
+		_, err = w.Write(space)
+		if err != nil {
+			return err
+		}
+		_, err = w.Write(newline)
+		if err != nil {
+			return err
+		}
 	}
 
-	w.Write(lowerHalfBlock)
-	for i := 0; i < g.Width(); i++ {
-		w.Write(lowerHalfBlock)
+	_, err = w.Write(lowerHalfBlock)
+	if err != nil {
+		return err
 	}
-	w.Write(lowerHalfBlock)
-	w.Write(newline)
+	for i := 0; i <= g.Width(); i++ {
+		_, err = w.Write(lowerHalfBlock)
+		if err != nil {
+			return err
+		}
+	}
+	_, err = w.Write(newline)
+	if err != nil {
+		return err
+	}
+	return nil
 
 }
 
