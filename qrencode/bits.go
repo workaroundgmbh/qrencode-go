@@ -91,9 +91,72 @@ func (g *BitGrid) String() string {
 	return b.String()
 }
 
+// Outputs the Code in UTF8 Block Characters. Each Bit is half a character
+func (g *BitGrid) WriteUtf8BlockChars(w io.Writer, inverse bool) {
+	var upperHalfBlock []byte
+	var lowerHalfBlock []byte
+	var completeBlock []byte
+	var space []byte
+
+	if inverse {
+		upperHalfBlock = []byte("\u2584")
+		lowerHalfBlock = []byte("\u2580")
+		completeBlock = []byte("\u0020")
+		space = []byte("\u2588")
+
+	} else {
+		upperHalfBlock = []byte("\u2580")
+		lowerHalfBlock = []byte("\u2584")
+		completeBlock = []byte("\u2588")
+		space = []byte("\u0020")
+
+	}
+	newline := []byte("\n")
+
+	w.Write(space)
+	for i := 0; i < g.Width(); i++ {
+		if g.Get(i, 0) {
+			w.Write(lowerHalfBlock)
+		} else {
+			w.Write(space)
+		}
+	}
+	w.Write(space)
+	w.Write(newline)
+
+	for i := 1; i < g.Height()-1; i = i + 2 {
+		w.Write(space)
+		for j := 0; j < g.Width(); j++ {
+			if g.Get(j, i) {
+				if g.Get(j, i+1) {
+					w.Write(completeBlock)
+				} else {
+					w.Write(upperHalfBlock)
+				}
+			} else {
+				if g.Get(j, i+1) {
+					w.Write(lowerHalfBlock)
+				} else {
+					w.Write(space)
+				}
+			}
+		}
+		w.Write(space)
+		w.Write(newline)
+	}
+
+	w.Write(lowerHalfBlock)
+	for i := 0; i < g.Width(); i++ {
+		w.Write(lowerHalfBlock)
+	}
+	w.Write(lowerHalfBlock)
+	w.Write(newline)
+
+}
+
 // Encode the Grid in ANSI escape sequences and set the background according
 // to the values in the BitGrid surrounded by a white frame
-func (g *BitGrid) TerminalOutput(w io.Writer) {
+func (g *BitGrid) WriteTerminalOutput(w io.Writer) {
 	white := "\033[47m  \033[0m"
 	black := "\033[40m  \033[0m"
 	newline := "\n"
