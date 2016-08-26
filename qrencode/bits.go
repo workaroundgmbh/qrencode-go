@@ -157,33 +157,33 @@ func (g *BitGrid) WriteUtf8BlockChars(w io.Writer, inverse bool) {
 // Encode the Grid in ANSI escape sequences and set the background according
 // to the values in the BitGrid surrounded by a white frame
 func (g *BitGrid) WriteTerminalOutput(w io.Writer) {
-	white := "\033[47m  \033[0m"
-	black := "\033[40m  \033[0m"
-	newline := "\n"
+	white := []byte("\033[47m  \033[0m")
+	black := []byte("\033[40m  \033[0m")
+	newline := []byte("\n")
 
-	w.Write([]byte(white))
+	w.Write(white)
 	for i := 0; i <= g.Width(); i++ {
-		w.Write([]byte(white))
+		w.Write(white)
 	}
-	w.Write([]byte(newline))
+	w.Write(newline)
 
 	for i := 0; i < g.Height(); i++ {
-		w.Write([]byte(white))
+		w.Write(white)
 		for j := 0; j < g.Width(); j++ {
 			if g.Get(j, i) {
-				w.Write([]byte(black))
+				w.Write(black)
 			} else {
-				w.Write([]byte(white))
+				w.Write(white)
 			}
 		}
-		w.Write([]byte(white))
-		w.Write([]byte(newline))
+		w.Write(white)
+		w.Write(newline)
 	}
-	w.Write([]byte(white))
+	w.Write(white)
 	for i := 0; i <= g.Width(); i++ {
-		w.Write([]byte(white))
+		w.Write(white)
 	}
-	w.Write([]byte(newline))
+	w.Write(newline)
 }
 
 // Return an image of the grid, with black blocks for true items and
