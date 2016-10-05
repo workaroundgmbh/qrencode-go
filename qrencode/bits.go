@@ -113,41 +113,64 @@ func (g *BitGrid) WriteUtf8BlockChars(w io.Writer, inverse bool) error {
 	}
 	newline := []byte("\n")
 
-	_, err := w.Write(space)
-	if err != nil {
-		return err
+	// print four lines of whitespace
+	for i := 0; i < 2; i++ {
+		for i := 0; i < g.Width()+8; i++ {
+			_, err := w.Write(space)
+			if err != nil {
+				return err
+			}
+		}
+		_, err := w.Write(newline)
+		if err != nil {
+			return err
+		}
+	}
+
+	// print the first line with four whitespaces on each site
+	for i := 0; i < 4; i++ {
+		_, err := w.Write(space)
+		if err != nil {
+			return err
+		}
 	}
 	for i := 0; i < g.Width(); i++ {
 		if g.Get(i, 0) {
-			_, err = w.Write(lowerHalfBlock)
+			_, err := w.Write(lowerHalfBlock)
 			if err != nil {
 				return err
 			}
 		} else {
-			_, err = w.Write(space)
+			_, err := w.Write(space)
 			if err != nil {
 				return err
 			}
 		}
 	}
-	_, err = w.Write(space)
-	if err != nil {
-		return err
+	for i := 0; i < 4; i++ {
+		_, err := w.Write(space)
+		if err != nil {
+			return err
+		}
 	}
-	_, err = w.Write(newline)
+	_, err := w.Write(newline)
 	if err != nil {
 		return err
 	}
 
+	// print the actual code
 	for i := 1; i < g.Height()-1; i = i + 2 {
-		_, err = w.Write(space)
-		if err != nil {
-			return err
+		for i := 0; i < 4; i++ {
+			_, err := w.Write(space)
+			if err != nil {
+				return err
+			}
 		}
+
 		for j := 0; j < g.Width(); j++ {
 			if g.Get(j, i) {
 				if g.Get(j, i+1) {
-					_, err = w.Write(completeBlock)
+					_, err := w.Write(completeBlock)
 					if err != nil {
 						return err
 					}
@@ -171,9 +194,11 @@ func (g *BitGrid) WriteUtf8BlockChars(w io.Writer, inverse bool) error {
 				}
 			}
 		}
-		_, err = w.Write(space)
-		if err != nil {
-			return err
+		for i := 0; i < 4; i++ {
+			_, err := w.Write(space)
+			if err != nil {
+				return err
+			}
 		}
 		_, err = w.Write(newline)
 		if err != nil {
@@ -181,19 +206,18 @@ func (g *BitGrid) WriteUtf8BlockChars(w io.Writer, inverse bool) error {
 		}
 	}
 
-	_, err = w.Write(lowerHalfBlock)
-	if err != nil {
-		return err
-	}
-	for i := 0; i <= g.Width(); i++ {
-		_, err = w.Write(lowerHalfBlock)
+	// print four lines of whitespace
+	for i := 0; i < 2; i++ {
+		for i := 0; i < g.Width()+8; i++ {
+			_, err := w.Write(space)
+			if err != nil {
+				return err
+			}
+		}
+		_, err := w.Write(newline)
 		if err != nil {
 			return err
 		}
-	}
-	_, err = w.Write(newline)
-	if err != nil {
-		return err
 	}
 	return nil
 
